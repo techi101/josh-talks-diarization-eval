@@ -1,0 +1,3 @@
+# Analysis only. Original speech runtime versions are recorded in environment/.
+numpy
+pandas

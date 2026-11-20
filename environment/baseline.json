@@ -1,0 +1,16 @@
+{
+ "python": "3.13.18",
+ "torch": "2.11.0+cpu",
+ "speechbrain": "1.1.2",
+ "silero_vad": "6.2.3",
+ "pyannote_metrics": "4.2.0",
+ "ecapa": "speechbrain/spkrec-ecapa-voxceleb",
+ "window_s": 1.5,
+ "hop_s": 0.75,
+ "ahc": "average linkage, cosine",
+ "threshold": 0.8,
+ "threshold_tuned_on": "AMI dev ES2011a (both mics)",
+ "vad": "silero default params",
+ "reference": "pyannote AMI-diarization-setup only_words RTTM",
+ "device": "cpu"
+}

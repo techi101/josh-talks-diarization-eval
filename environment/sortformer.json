@@ -1,0 +1,24 @@
+{
+ "model": "nvidia/diar_streaming_sortformer_4spk-v2",
+ "nemo": "3.0.0",
+ "torch": "2.11.0+cu130",
+ "pyannote_metrics": "4.2.0",
+ "device": "cuda",
+ "configs": {
+  "Sortformer v2, 30 s latency (offline-like)": {
+   "chunk_len": 340,
+   "chunk_right_context": 40,
+   "fifo_len": 40,
+   "spkcache_update_period": 300,
+   "spkcache_len": 188
+  },
+  "Sortformer v2, 1.04 s latency (live)": {
+   "chunk_len": 6,
+   "chunk_right_context": 7,
+   "fifo_len": 188,
+   "spkcache_update_period": 144,
+   "spkcache_len": 188
+  }
+ },
+ "python": "3.13.16"
+}

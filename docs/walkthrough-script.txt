@@ -1,0 +1,49 @@
+﻿JOSH TALKS FDE VIDEO (natural version, under 2 minutes)
+Tab 1 = One-Pager      Tab 2 = Leaderboard sketch
+Start Loom on Tab 1: Loom icon > Screen and Camera > Current tab > Start Recording
+
+[0:00]  [TAB 1. POINT AT THE BIG HEADLINE]
+"Hi, I'm Nitesh. I designed a public leaderboard for speaker diarization, which is software that listens to a conversation and works out who spoke when."
+
+[POINT AT THE ROW OF 5 ICONS]
+"It's for teams building meeting notes, call-centre tools or medical scribes, who all want to know one thing: which system works best on audio like mine?"
+
+[0:12]  [POINT AT THE 5 NUMBER TILES]
+"The setup: about 60 hours of fresh, hidden conversations from five real settings, in Indian English, Hindi and Hinglish."
+
+[POINT AT STEPS 01 AND 02]
+"Every speaker wears their own small mic, and two people check the labels."
+
+[POINT AT THE TILE 19]
+"And we test nineteen systems, from open-source models to big commercial APIs."
+
+[0:28]  [SCROLL DOWN. POINT AT "THE THREE CHOICES"]
+"Three decisions really shape this board."
+
+[POINT AT CARD 1, PURPLE]
+"First, relevance. A call-centre team shouldn't choose from an average that's mostly meetings, so you pick your use case and the ranking changes to match."
+
+[POINT AT CARD 2, GREEN]
+"Second, strict scoring. We count every mistake, especially when people talk over each other, because that's where real products break."
+
+[SCROLL DOWN. POINT AT THE GREEN BOX]
+"In a small test I ran myself, just changing the scoring rules took the same system from 21 percent error to 11. Same output, half the error."
+
+[POINT AT THE PINK BOX]
+"In another recording it found only 2 of 4 speakers, yet the score looked fine. So speaker count sits right next to it."
+
+[SCROLL UP. POINT AT CARD 3, ORANGE]
+"Third, trust. Every score shows how certain we are, so a tiny gap isn't sold as a win, and a system that quietly returns nothing gets flagged."
+
+[1:20]  [CLICK TAB 2]
+"Here's how it looks as a product."
+[POINT AT THE USE-CASE BUTTONS]       "Pick your use case,"
+[POINT AT THE FILTER BAR]             "filter it down,"
+[POINT AT THE DER COLUMN WITH BARS]   "and every score shows its range."
+[POINT AT THE RED 18% BADGE]          "This red badge is a silent failure,"
+[POINT AT THE RIGHT-SIDE PANEL]       "and this panel shows each setting in detail."
+
+[1:38]  [LOOK AT THE CAMERA]
+"My biggest lesson, from DIHARD III especially, is to test on many kinds of audio and score strictly. And Voice Arena's own results show that one silent failure can decide a whole ranking. Thanks for watching."
+
+[STOP > SHARE > ANYONE WITH THE LINK CAN VIEW > COPY LINK > PASTE IN THE TERMINAL]

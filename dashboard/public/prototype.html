@@ -1,0 +1,86 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diarization Leaderboard Prototype</title>
+<style>
+:root{--ink:#1b1b1a;--mut:#52514e;--line:#e2e0da;--bg:#fcfcfb;--card:#fff;--blue:#2a78d6;--or:#eb6834;--yel:#eda100;--soft:#eef4fc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f0efec;--mut:#c3c2b7;--line:#3a3a37;--bg:#1a1a19;--card:#222220;--blue:#3987e5;--or:#d95926;--yel:#c98500;--soft:#23324a}}
+:root[data-theme="dark"]{--ink:#f0efec;--mut:#c3c2b7;--line:#3a3a37;--bg:#1a1a19;--card:#222220;--blue:#3987e5;--or:#d95926;--yel:#c98500;--soft:#23324a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,Arial,sans-serif;font-size:13px}
+.wrap{max-width:1320px;margin:0 auto;padding:18px 16px}
+h1{font-size:20px;margin:0}h1 span{color:var(--blue)}.mut{color:var(--mut)}.small{font-size:11px}
+.warn{display:inline-block;font-size:11px;padding:3px 8px;border-radius:6px;background:#fdf1e6;color:#9a4a10;border:1px solid #f3c79c;margin-top:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:4px 10px}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}button.pre.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.filters{display:flex;flex-wrap:wrap;gap:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.f b{display:block;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.grid{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-top:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:820px}th{font-size:10px;text-transform:uppercase;color:var(--mut);text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap}
+td{padding:8px 6px;border-bottom:1px solid var(--line)}tr.sys:hover{background:var(--soft);cursor:pointer}tr.sel{background:var(--soft)}
+.num{text-align:right;font-variant-numeric:tabular-nums}.grp{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--blue);text-align:center;line-height:22px;font-weight:700}
+.bar{display:flex;height:10px;width:120px;border-radius:3px;overflow:hidden;background:var(--line)}.bar i{display:block;height:100%;border-right:2px solid var(--card)}
+.flag{font-size:11px;padding:1px 6px;border-radius:8px;background:#fdf1e6;color:#9a4a10;border:1px solid #f3c79c}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:12px}.card h4{margin:0 0 6px;font-size:13px}
+.hm{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.hm div{border-radius:4px;padding:6px;text-align:center;font-size:11px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 8px;border-radius:6px;font-size:11px;display:none;z-index:9}
+.legend span{display:inline-flex;align-items:center;gap:4px;margin-right:12px}.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.noise{font-size:10px;color:var(--mut)}
+</style></head><body><div class="wrap">
+<h1>Voice Arena <span>Diarization Leaderboard</span></h1>
+<div class="mut small">Interactive prototype of the full design &middot; Nitesh Kumar Yadav &middot; <a href="./" style="color:var(--blue)">&larr; back to the real results</a></div>
+<div class="warn">PROTOTYPE: systems are anonymised and every number is illustrative (generated for the mockup), not a result</div>
+<div class="row"><b class="small mut">I am building&hellip;</b><span id="presets"></span></div>
+<div class="filters" id="filters"></div>
+<div class="grid"><div>
+<div class="small mut" id="slice" style="margin-bottom:6px"></div>
+<div class="tw"><table><thead><tr><th>Group</th><th data-k="name">System</th><th class="num" data-k="der">DER %</th><th>95% CI</th><th>Error split</th><th class="num" data-k="jer">JER %</th><th class="num" data-k="spk">Spk count ok</th><th class="num" data-k="empty">Empty / partial</th><th class="num" data-k="cost">$ / audio h</th><th>Type</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="legend small mut" style="margin-top:6px"><span><i style="background:var(--or)"></i>Missed speech</span><span><i style="background:var(--yel)"></i>False alarm</span><span><i style="background:var(--blue)"></i>Speaker confusion</span><span>Group: same number = not separable (paired session bootstrap, 95%)</span></div>
+</div><div>
+<div class="card"><h4 id="dtitle">Click a system</h4><div id="detail" class="small mut">Per-condition DER, collar sensitivity and the run card appear here.</div></div>
+<div class="card small mut"><h4 style="color:var(--ink)">How to read this</h4>DER = share of speech time a system gets wrong (missed + false alarm + wrong speaker). Lower is better. Strict scoring by default: 0 ms collar, overlap scored, speaker count not given. Groups come from a paired session bootstrap; a lead smaller than the interval is not a win. "Empty / partial" = sessions where the system returned speech for under half the reference speech.</div>
+</div></div></div><div id="tip"></div>
+<script>
+const SL={setting:['All','In-person','Online','Telephone','Clinical','Media'],spk:['All','2','3-4','5+'],ovl:['All','<10%','10-30%','30%+'],lang:['All','English','Hindi / Hinglish','Other Indic'],dep:['All','API','Self-host'],collar:['0 ms','100 ms','250 ms']};
+const N={setting:{All:402,'In-person':118,Online:70,Telephone:96,Clinical:58,Media:60},spk:{All:1,'2':0.42,'3-4':0.38,'5+':0.2},ovl:{All:1,'<10%':0.33,'10-30%':0.4,'30%+':0.27},lang:{All:1,English:0.6,'Hindi / Hinglish':0.3,'Other Indic':0.1}};
+const PRE={'Meeting notes':{setting:'In-person',spk:'3-4'},'Call-centre analytics':{setting:'Telephone',spk:'2'},'Clinical scribe':{setting:'Clinical',spk:'2'},'Media & subtitles':{setting:'Media',spk:'5+'},'Show everything':{}};
+// illustrative systems: base DER parts + sensitivities per condition
+const S=[
+{name:'System A',type:'Diarization only · self-host',dep:'Self-host',m:3.2,f:4.8,c:2.0,cost:'~$0.05',ver:'v2 · run 2026-10-30',w:{'In-person':1.15,Online:.85,Telephone:.8,Clinical:1.0,Media:1.5,'5+':1.5,'2':.75,'30%+':1.4,'<10%':.75,'Hindi / Hinglish':1.05,'Other Indic':1.1},empty:0},
+{name:'System B',type:'Diarization only · API',dep:'API',m:3.8,f:4.3,c:2.6,cost:'$0.15',ver:'2026-09 · run 2026-10-29',w:{'In-person':1.1,Online:.95,Telephone:.9,Clinical:1.0,Media:1.6,'5+':1.7,'2':.8,'30%+':1.3,'<10%':.8,'Hindi / Hinglish':1.0,'Other Indic':1.05},empty:0},
+{name:'System C',type:'Transcription + speakers · API',dep:'API',m:4.6,f:4.9,c:1.9,cost:'$0.26',ver:'2026-09-14 · run 2026-10-31',w:{'In-person':1.2,Online:.75,Telephone:.6,Clinical:.9,Media:1.6,'5+':1.8,'2':.65,'30%+':1.5,'<10%':.7,'Hindi / Hinglish':1.25,'Other Indic':1.5},empty:1},
+{name:'System D',type:'Transcription + speakers · API',dep:'API',m:6.1,f:3.1,c:3.1,cost:'$0.37',ver:'v5 · run 2026-10-31',w:{'In-person':1.1,Online:1.0,Telephone:.85,Clinical:1.0,Media:1.3,'5+':1.5,'2':.8,'30%+':1.3,'<10%':.8,'Hindi / Hinglish':1.1,'Other Indic':1.2},empty:0},
+{name:'System E',type:'Diarization only · self-host (non-commercial licence)',dep:'Self-host',m:5.3,f:6.0,c:4.3,cost:'~$0.06',ver:'s80 · run 2026-10-30',w:{'In-person':1.05,Online:.9,Telephone:1.1,Clinical:1.0,Media:1.4,'5+':1.7,'2':.6,'30%+':1.4,'<10%':.8,'Hindi / Hinglish':1.0,'Other Indic':1.0},empty:0},
+{name:'System F',type:'Transcription + speakers · API',dep:'API',m:25,f:2.0,c:4.9,cost:'$0.26',ver:'2025-07 · run 2026-10-31',w:{'In-person':1.6,Online:.55,Telephone:.5,Clinical:1.1,Media:1.2,'5+':1.3,'2':.7,'30%+':1.2,'<10%':1.0,'Hindi / Hinglish':1.4,'Other Indic':1.5},empty:18},
+{name:'Baseline B2',type:'VAD + ECAPA + clustering (ours)',dep:'Self-host',m:6.9,f:6.2,c:11.2,cost:'~$0.02',ver:'v1 · run 2026-10-30',w:{'In-person':1.2,Online:.9,Telephone:.8,Clinical:1.0,Media:1.4,'5+':1.6,'2':.7,'30%+':1.3,'<10%':.8},empty:0},
+{name:'Baseline B1',type:'VAD, one speaker (floor)',dep:'Self-host',m:6.9,f:6.2,c:34,cost:'~$0.01',ver:'v1 · run 2026-10-30',w:{Telephone:.75,'2':.7,'5+':1.45,Media:1.3},empty:0}];
+const st={setting:'All',spk:'All',ovl:'All',lang:'All',dep:'All',collar:'0 ms',sort:'der',sel:null,pre:'Show everything'};
+const $=id=>document.getElementById(id);
+function mult(s){let k=1;for(const d of ['setting','spk','ovl','lang']){if(st[d]!=='All')k*=(s.w[st[d]]||1)}return k}
+function sessions(){let n=N.setting[st.setting];for(const d of ['spk','ovl','lang'])n*=N[d][st[d]];return Math.max(4,Math.round(n))}
+function row(s){const k=mult(s),cf=st.collar==='0 ms'?1:st.collar==='100 ms'?.85:.68;const m=s.m*k,f=s.f*k*cf,c=s.c*k*(cf+.15>1?1:cf+.15);const der=m+f+c,n=sessions(),hw=der*1.9/Math.sqrt(n)+0.6;
+return {...s,mm:m,ff:f,cc:c,der,lo:der-hw,hi:der+hw,jer:der*1.55+6,spk:Math.max(0,Math.min(98,100-der*2.6)),hw}}
+function groups(rs){rs.sort((a,b)=>a.der-b.der);let g=1,anchor=rs[0];rs.forEach((r,i)=>{if(i>0&&r.lo>anchor.hi){g=i+1;anchor=r}r.g=g})}
+function render(){
+ $('presets').innerHTML=Object.keys(PRE).map(p=>`<button class="pre ${st.pre===p?'on':''}" data-p="${p}">${p}</button>`).join(' ');
+ $('filters').innerHTML=[['setting','Setting'],['spk','Speakers'],['ovl','Overlap'],['lang','Language'],['dep','Deployment'],['collar','Collar']].map(([k,l])=>`<div class="f"><b>${l}</b>${SL[k].map(v=>`<button class="${st[k]===v?'on':''}" data-k="${k}" data-v="${v}">${v}</button>`).join(' ')}</div>`).join('');
+ let rs=S.filter(s=>st.dep==='All'||s.dep===st.dep).map(row);groups(rs);
+ if(st.sort!=='der')rs.sort((a,b)=>st.sort==='name'?a.name.localeCompare(b.name):(st.sort==='spk'?b[st.sort]-a[st.sort]:(st.sort==='cost'?parseFloat(a.cost.replace(/[^0-9.]/g,''))-parseFloat(b.cost.replace(/[^0-9.]/g,'')):a[st.sort]-b[st.sort])));
+ const n=sessions();$('slice').textContent=`Slice: ${['setting','spk','ovl','lang'].map(k=>st[k]).filter(v=>v!=='All').join(' · ')||'all sessions'} · ${n} sessions · collar ${st.collar}`+(n<30?' · ⚠ fewer than 30 sessions: treat with caution':'');
+ const W=120/55;
+ $('tb').innerHTML=rs.map(r=>`<tr class="sys ${st.sel===r.name?'sel':''}" data-n="${r.name}"><td><span class="grp">${r.g}</span></td><td><b>${r.name}</b><br><span class="small mut">${r.ver}</span></td><td class="num"><b>${r.der.toFixed(1)}</b></td><td class="small mut">${r.lo.toFixed(1)}–${r.hi.toFixed(1)}</td><td><div class="bar" data-t="Missed ${r.mm.toFixed(1)} · False alarm ${r.ff.toFixed(1)} · Confusion ${r.cc.toFixed(1)}"><i style="width:${r.mm*W}px;background:var(--or)"></i><i style="width:${r.ff*W}px;background:var(--yel)"></i><i style="width:${r.cc*W}px;background:var(--blue)"></i></div></td><td class="num">${r.jer.toFixed(1)}</td><td class="num">${r.spk.toFixed(0)}%</td><td class="num">${r.empty?`<span class="flag" data-t="${r.empty}% of sessions returned speech for under half the reference. Vendor notified; listening review attached.">⚠ ${r.empty}%</span>`:'0%'}</td><td class="num">${r.cost}</td><td class="small mut">${r.type}</td></tr>`).join('');
+ detail(rs);
+}
+function detail(rs){const s=S.find(x=>x.name===st.sel);if(!s){return}
+ const cells=SL.setting.slice(1).concat(['2','5+','30%+']).map(c=>{const save={...st};for(const k of ['setting','spk','ovl','lang'])st[k]='All';if(SL.setting.includes(c))st.setting=c;else if(c.endsWith('%+'))st.ovl=c;else st.spk=c;const r=row(s);Object.assign(st,save);return [c,r.der]});
+ const mx=Math.max(...cells.map(c=>c[1]));
+ $('dtitle').textContent=s.name+' per condition';
+ const save=st.collar;st.collar='0 ms';const c0=row({...s});st.collar='250 ms';const c2=row({...s});st.collar=save;
+ $('detail').innerHTML=`<div class="hm">${cells.map(([c,v])=>`<div style="background:color-mix(in srgb,var(--blue) ${Math.round(15+70*v/mx)}%,var(--card));color:${v/mx>.6?'#fff':'inherit'}">${/^[0-9]/.test(c)&&!c.includes('%')?c+' spk':c}<br><b>${v.toFixed(1)}</b></div>`).join('')}</div>
+ <p>Collar sensitivity (current slice): <b>${c0.der.toFixed(1)}</b> at 0 ms vs <b>${c2.der.toFixed(1)}</b> at 250 ms. A big drop means many errors sit right at speaker changes.</p><p>Run card: ${s.ver}; default settings; no speaker count given; raw outputs and request IDs archived.</p>`}
+document.addEventListener('click',e=>{const b=e.target.closest('button');const tr=e.target.closest('tr.sys');const th=e.target.closest('th[data-k]');
+ if(b&&b.dataset.p){st.pre=b.dataset.p;for(const k of ['setting','spk','ovl','lang'])st[k]='All';Object.assign(st,PRE[b.dataset.p]);render()}
+ else if(b&&b.dataset.k){st[b.dataset.k]=b.dataset.v;st.pre='';render()}
+ else if(tr){st.sel=tr.dataset.n;render()}else if(th){st.sort=th.dataset.k;render()}});
+const tip=$('tip');document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-t]');if(t){tip.style.display='block';tip.textContent=t.dataset.t;tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY+12)+'px'}else tip.style.display='none'});
+st.sel='System C';render();
+</script></body></html>

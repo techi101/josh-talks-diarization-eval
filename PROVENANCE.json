@@ -1,0 +1,90 @@
+{
+  "scripts/run_baselines.py": {
+    "original_relative_path": "q1_run/kaggle/run_small_kaggle.py",
+    "sha256": "c5edf2d8903b07f8a5bce5c294b48fd117bc5816cf1cbc7926ca9cd04f4abf06"
+  },
+  "scripts/run_pyannote.py": {
+    "original_relative_path": "q1_run/kaggle_pyannote/run_pyannote.py",
+    "sha256": "c1db337f120661a321bb57e5be4e5cfbc589b300cba17648ee162a4bc8f62ab1"
+  },
+  "scripts/run_sortformer.py": {
+    "original_relative_path": "q1_run/kaggle_sortformer/run_sortformer.py",
+    "sha256": "aa69fa490373e8d495566abf9b1f75887ac0de2d6144248b812d1933c6da82ad"
+  },
+  "scripts/original_bootstrap.py": {
+    "original_relative_path": "q1_run/bootstrap.py",
+    "sha256": "7d836092364debc4ff6037ff7382e9024ee98dc1f46df634a05c5b2f5be756bd"
+  },
+  "results/small_run_results.csv": {
+    "original_relative_path": "q1_run/small_run_results.csv",
+    "sha256": "75fbe30b2c2c13a90b928f0f4eb2df2db97822fe9922e99a8e4c1f5b984a65df"
+  },
+  "results/pyannote_results.csv": {
+    "original_relative_path": "q1_run/pyannote_results.csv",
+    "sha256": "5d7c8b249f71f91e352cefdfe415e177a0bad7cb564647b0de92fb25566681ae"
+  },
+  "results/sortformer_results.csv": {
+    "original_relative_path": "q1_run/sortformer_results.csv",
+    "sha256": "e306628d681e4ef3f0b4b5997c91bc8890e598d39d280939eb6b9cc961173b11"
+  },
+  "results/bootstrap_small.csv": {
+    "original_relative_path": "q1_run/bootstrap_small.csv",
+    "sha256": "cb5ee158222984946872eb2cc19f27c3ad8a947ce9505afe27edae2bd85f6c0f"
+  },
+  "results/threshold_dev.csv": {
+    "original_relative_path": "q1_run/threshold_dev.csv",
+    "sha256": "475e8f77dfd0cd745c0c1615bcb5947855df8137b4d8b81d017f1ce7ce2d69eb"
+  },
+  "environment/baseline.json": {
+    "original_relative_path": "q1_run/small_run_env.json",
+    "sha256": "c7c9d95a29358f7cf4aa5d96399b738b98b6c102fadf9c2e35a9436eeb467b0f"
+  },
+  "environment/pyannote.json": {
+    "original_relative_path": "q1_run/pyannote_env.json",
+    "sha256": "600724c8a2129de3965966cba06fbffcdf8163a23939a069764e7db3d6fcc810"
+  },
+  "environment/sortformer.json": {
+    "original_relative_path": "q1_run/sortformer_env.json",
+    "sha256": "44fe730f444a204b38200fca0757ae594fbe349fbf30cc4652efb44e8edd34cf"
+  },
+  "reports/Submission.pdf": {
+    "original_relative_path": "deliverables_FDE/Nitesh_Yadav_Q1_Submission_2.pdf",
+    "sha256": "e0a7a18c2cc217fb62752b00dd6490e89205b67427cab48dc2f96d12b222eab3"
+  },
+  "reports/Main.pdf": {
+    "original_relative_path": "deliverables_FDE/Nitesh_Yadav_Q1_Main.pdf",
+    "sha256": "742c299331ac15299097364c62d48ca9bac522897d838dac1ae21a0ea0535aa3"
+  },
+  "reports/OnePager.pdf": {
+    "original_relative_path": "deliverables_FDE/Nitesh_Yadav_Q1_OnePager_2.pdf",
+    "sha256": "f6cb5739d8d972ed48d9603f637e9031c9898698a973cb8bb9c6c76fd2678c68"
+  },
+  "reports/LeaderboardSketch.pdf": {
+    "original_relative_path": "deliverables_FDE/Nitesh_Yadav_Q1_LeaderboardSketch_2.pdf",
+    "sha256": "c7b4c1ebf8b69838c021a6051febb36afabc3bc189fe6af53b832eb2d1ddfcce"
+  },
+  "dashboard/public/index.html": {
+    "original_relative_path": "diarization_board/public/index.html",
+    "sha256": "0358b75399857b135ae8177aeb97c7aa4c7babc76e9f12fea8084b26dc54d8d5"
+  },
+  "dashboard/public/prototype.html": {
+    "original_relative_path": "diarization_board/public/prototype.html",
+    "sha256": "4f39b9ace3c436c73c42b04416892a0984ae4ff697c6aeb13d6d848f613566a3"
+  },
+  "dashboard/template.html": {
+    "original_relative_path": "diarization_board/template.html",
+    "sha256": "34a020f97735d0904163cbe7b1f21513bd75f76c1e0a856bae45d06643988f5e"
+  },
+  "dashboard/data.json": {
+    "original_relative_path": "diarization_board/data.json",
+    "sha256": "ffdc794a17a7ce1f9213862cdbba35b81e4850723badc4fc1d18079f2f99dceb"
+  },
+  "dashboard/wrangler.jsonc": {
+    "original_relative_path": "diarization_board/wrangler.jsonc",
+    "sha256": "06ec0a6cc4973bb5501dd8d1e692d9acc8640b00a66351c8d86bc4dac5abb59c"
+  },
+  "docs/walkthrough-script.txt": {
+    "original_relative_path": "q1/VIDEO_SCRIPT_Q1_NATURAL.txt",
+    "sha256": "ba64f0b4d8b916943ed25e3a7826445fb6c5d3d04f806907fd684374d5fe125b"
+  }
+}

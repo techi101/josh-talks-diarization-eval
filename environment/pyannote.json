@@ -1,0 +1,8 @@
+{
+ "model": "pyannote/speaker-diarization-community-1",
+ "pyannote_audio": "4.0.7",
+ "torch": "2.11.0+cu130",
+ "pyannote_metrics": "4.2.0",
+ "device": "cuda",
+ "python": "3.13.16"
+}

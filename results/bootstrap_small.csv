@@ -1,0 +1,9 @@
+comparison,observed,ci_lo,ci_hi,p_better
+S2 minus S1,-5.1,-17.4,6.8,0.796
+S3 minus S2,-3.6,-11.0,4.5,0.807
+S3 minus S1,-8.6,-13.3,-4.3,1.0
+Sortformer offline minus S3,-15.5,-22.6,-8.1,1.0
+Sortformer live minus Sortformer offline,7.0,1.3,15.7,0.0
+Sortformer live minus S3,-8.5,-15.4,-3.0,1.0
+pyannote minus Sortformer offline,-10.6,-14.6,-6.3,1.0
+pyannote told count minus pyannote,4.0,-0.4,12.0,0.242

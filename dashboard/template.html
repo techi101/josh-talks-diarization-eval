@@ -1,0 +1,151 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diarization Leaderboard</title>
+<meta name="description" content="Who-spoke-when leaderboard: pyannote, NVIDIA Sortformer and baselines on AMI meetings, strict scoring, paired bootstrap rank groups.">
+<style>
+:root{--ink:#1b1b1a;--mut:#5a5955;--line:#e2e0da;--bg:#fcfcfb;--card:#fff;--blue:#2a78d6;--or:#eb6834;--yel:#e0a000;--soft:#eef4fc;--ok:#1f8a4c;--warnbg:#fdf1e6;--warnfg:#9a4a10;--warnline:#f3c79c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f0efec;--mut:#b9b8ae;--line:#3a3a37;--bg:#1a1a19;--card:#222220;--blue:#4a94ea;--or:#e06a36;--yel:#d09400;--soft:#23324a;--ok:#4cc27e;--warnbg:#3a2a1c;--warnfg:#f3c08c;--warnline:#6b4520}}
+:root[data-theme="dark"]{--ink:#f0efec;--mut:#b9b8ae;--line:#3a3a37;--bg:#1a1a19;--card:#222220;--blue:#4a94ea;--or:#e06a36;--yel:#d09400;--soft:#23324a;--ok:#4cc27e;--warnbg:#3a2a1c;--warnfg:#f3c08c;--warnline:#6b4520}
+*{box-sizing:border-box}html,body{overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;font-size:14px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0}h1 span{color:var(--blue)}h2{font-size:16px;margin:26px 0 8px}
+.mut{color:var(--mut)}.small{font-size:12px}
+.note{font-size:12px;padding:8px 10px;border-radius:8px;background:var(--soft);border:1px solid var(--line);margin-top:10px}
+.warn{font-size:12px;padding:6px 10px;border-radius:8px;background:var(--warnbg);color:var(--warnfg);border:1px solid var(--warnline);margin-top:8px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+nav a{font-size:13px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:4px 12px;background:var(--card)}
+nav a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;flex-wrap:wrap;gap:14px 20px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);margin-top:12px}
+.f b{display:block;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+button{font:inherit;font-size:12px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:4px 10px;margin:0 3px 4px 0}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;margin-top:12px}@media(max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.sys{cursor:pointer}tr.sys:hover,tr.sel{background:var(--soft)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.grp{display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--soft);color:var(--blue);text-align:center;line-height:24px;font-weight:700;border:1px solid var(--line)}
+.bar{display:flex;height:11px;width:130px;border-radius:3px;overflow:hidden;background:var(--line)}.bar i{display:block;height:100%}
+.tag{font-size:11px;padding:1px 7px;border-radius:9px;border:1px solid var(--line);color:var(--mut);white-space:nowrap}
+.tag.stream{color:var(--or);border-color:var(--or)}.tag.base{color:var(--mut)}.tag.off{color:var(--blue);border-color:var(--blue)}
+.bad{color:var(--or);font-weight:600}.good{color:var(--ok);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}.card h4{margin:0 0 8px;font-size:14px}
+.legend{margin-top:8px}.legend span{display:inline-flex;align-items:center;gap:5px;margin-right:14px}.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.rec{width:100%;min-width:0;font-size:12px}.rec td,.rec th{padding:5px 4px}
+select{font:inherit;font-size:12px;padding:4px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:100%}
+.ci{position:relative;height:34px;margin:8px 0 2px;border-radius:6px;background:var(--soft)}
+.ci .z{position:absolute;top:0;bottom:0;width:1px;background:var(--ink);opacity:.5}
+.ci .r{position:absolute;top:13px;height:8px;border-radius:4px;background:var(--blue)}
+.ci .o{position:absolute;top:9px;width:4px;height:16px;border-radius:2px;background:var(--ink)}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.cards3 .card p{margin:0}.big{font-size:22px;font-weight:700;color:var(--blue)}
+ol,ul{padding-left:20px}li{margin:4px 0}
+code{font-family:Consolas,monospace;font-size:12px;background:var(--soft);padding:1px 4px;border-radius:4px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 8px;border-radius:6px;font-size:12px;display:none;z-index:9;max-width:260px}
+footer{margin-top:30px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px}
+a{color:var(--blue)}
+</style></head><body><div class="wrap">
+<h1>Who spoke when: <span>Diarization Leaderboard</span></h1>
+<div class="mut small">By Nitesh Kumar Yadav · a working version of my leaderboard design for Josh Talks Voice Arena</div>
+<nav><a class="on" href="./">Real results</a><a href="prototype.html">Full design prototype</a><a href="#method">How it is scored</a></nav>
+<div class="note"><b>These are real numbers.</b> I ran 7 systems on 3 AMI meetings (ES2004a, IS1009a, TS3003a). Each has 4 speakers and two mics: a close-talk headset mix and a far-field table array. That makes 6 recordings, about 2 hours. Scored with <code>pyannote.metrics 4.2.0</code> on Kaggle GPUs. Six recordings is small, so the rank groups below are wide on purpose.</div>
+
+<div class="filters" id="filters"></div>
+<div class="grid"><div>
+<div class="small mut" id="slice" style="margin-bottom:6px"></div>
+<div class="tw"><table><thead><tr><th>Group</th><th>System</th><th>Track</th><th class="num">DER %</th><th>Error split</th><th class="num">JER %</th><th class="num">Speakers found</th><th class="num">RTF</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="legend small mut"><span><i style="background:var(--or)"></i>Missed speech</span><span><i style="background:var(--yel)"></i>False alarm</span><span><i style="background:var(--blue)"></i>Wrong speaker</span></div>
+<div class="small mut" style="margin-top:6px">Group: systems sharing a number can't be told apart (paired bootstrap over recordings, 2,000 resamples, 95%). Lower DER is better. Click a row for per-recording detail.</div>
+
+<h2>Told the speaker count (kept off the main board)</h2>
+<div class="small mut" style="margin-bottom:6px">Real products are not told how many people are in the room, so these runs are shown only for comparison.</div>
+<div class="tw"><table><thead><tr><th>System</th><th class="num">DER %</th><th>Error split</th><th class="num">JER %</th><th class="num">vs auto-count run</th></tr></thead><tbody id="tb2"></tbody></table></div>
+</div><div>
+<div class="card"><h4 id="dtitle">Per recording</h4><div id="detail" class="small"></div></div>
+<div class="card"><h4>Is A really better than B?</h4>
+<div class="small mut">Paired bootstrap on the current filter. Each resample redraws recordings with replacement and compares both systems on the same audio.</div>
+<div style="margin-top:8px"><select id="pa"></select> <span class="small mut">vs</span> <select id="pb"></select></div>
+<div id="pres" class="small" style="margin-top:6px"></div></div>
+</div></div>
+
+<h2>What the numbers taught me</h2>
+<div class="cards3">
+<div class="card"><div class="big">21.4% → 11.4%</div><p>The <b>same pyannote output</b> scores almost half the error under the old NIST rules (250 ms collar, overlap skipped). So scoring settings move numbers as much as switching systems does. Try the Scoring filter above.</p></div>
+<div class="card"><div class="big">2 of 4 people</div><p>On TS3003a far-field, pyannote found only 2 of the 4 speakers but still scored 26.1% DER. JER was 70%. A low DER can hide a missing person, so JER and speakers found sit right next to DER.</p></div>
+<div class="card"><div class="big">+6 vs +15 points</div><p>Going from headset to far-field mic cost pyannote about 6 points but live Sortformer about 15. Streaming systems break hardest on hard audio, so they get their own track.</p></div>
+<div class="card"><div class="big">CI −17.4 to +6.8</div><p>My baseline S2 beat the 1-speaker floor by 5 points on average, but the bootstrap can't separate them on 6 recordings. pyannote vs Sortformer offline (−10.6, CI −14.6 to −6.3) is a real gap.</p></div>
+</div>
+
+<h2 id="method">How it is scored</h2>
+<div class="card small">
+<ul>
+<li><b>DER</b> (diarization error rate) = (missed speech + false alarm + wrong speaker) ÷ total reference speech. Lower is better. The table shows the plain mean over recordings.</li>
+<li><b>Strict by default:</b> 0 ms collar (no free pass at speaker changes), overlapping speech is scored, and systems are <b>not</b> told the speaker count.</li>
+<li><b>JER</b> (Jaccard error rate) averages the error per speaker, so a system that ignores the quiet person gets caught.</li>
+<li><b>Speakers found</b> = how many speakers the system output, against the true 4. Green when it is exactly right.</li>
+<li><b>RTF</b> (real-time factor) = processing time ÷ audio length, measured on a Kaggle GPU. Baselines ran on CPU and weren't timed.</li>
+<li><b>Rank groups:</b> sorted by DER, then each system is compared with the current group leader by a paired bootstrap of time-weighted DER. A new group starts only when the 95% interval of the difference is entirely above 0.</li>
+<li><b>Reference:</b> pyannote AMI-diarization-setup word-aligned RTTM. <b>Baselines:</b> S1 = Silero VAD with everything as one speaker (the floor). S2 = Silero VAD + ECAPA embeddings (1.5 s windows) + clustering, with the threshold tuned on a separate dev meeting (ES2011a), never on test.</li>
+<li><b>Systems:</b> pyannote speaker-diarization community-1; NVIDIA Sortformer v2 streaming at a 30 s buffer (offline-like) and a 1.04 s buffer (live).</li>
+</ul>
+The full design (60 hours of new hidden audio in 5 settings, Indian English, Hindi and Hinglish, two annotators, vendor preview, 20% refresh every 6 months) is in the <a href="prototype.html">design prototype</a>. Its numbers are illustrative; the numbers on this page are not.
+</div>
+<footer>Nitesh Kumar Yadav · NSUT Delhi · Built from my own Kaggle runs, every number traceable to a CSV. AMI Meeting Corpus (CC BY 4.0).</footer>
+</div><div id="tip"></div>
+<script>
+const D=__DATA__;
+const SET=['strict (0 collar, overlap scored)','0.25 s collar, overlap scored','0 collar, overlap skipped','0.25 s collar, overlap skipped (old NIST style)'];
+const SETL={'strict (0 collar, overlap scored)':'Strict (default)','0.25 s collar, overlap scored':'250 ms collar','0 collar, overlap skipped':'Overlap skipped','0.25 s collar, overlap skipped (old NIST style)':'Old NIST (both)'};
+const MAIN=[
+ {k:'pyannote community-1 (auto count)',n:'pyannote community-1',sub:'open source · offline',t:'off',tl:'Offline'},
+ {k:'Sortformer v2, 30 s latency (offline-like)',n:'NVIDIA Sortformer v2',sub:'30 s buffer, offline-like',t:'off',tl:'Offline'},
+ {k:'Sortformer v2, 1.04 s latency (live)',n:'NVIDIA Sortformer v2',sub:'1.04 s buffer, live',t:'stream',tl:'Streaming'},
+ {k:'S2 VAD + ECAPA + AHC (auto count)',n:'Baseline S2 (mine)',sub:'Silero VAD + ECAPA + clustering',t:'base',tl:'Baseline'},
+ {k:'S1 VAD + single speaker',n:'Floor S1',sub:'speech = one speaker',t:'base',tl:'Floor'}];
+const ORA=[
+ {k:'pyannote community-1, told true count',n:'pyannote, told 4 speakers',base:'pyannote community-1 (auto count)'},
+ {k:'S3 same, told true count',n:'Baseline S2, told 4 speakers',base:'S2 VAD + ECAPA + AHC (auto count)'}];
+const MICL={'Mix-Headset':'Headset (close)','Array1-01':'Table array (far)'};
+const st={set:SET[0],mic:'All',m:'All',sel:MAIN[0].k};
+const $=id=>document.getElementById(id);
+function recs(sys){return D.rows.filter(r=>r.sys===sys&&r.set===st.set&&(st.mic==='All'||r.mic===st.mic)&&(st.m==='All'||r.m===st.m))}
+const mean=(a,f)=>a.reduce((s,x)=>s+x[f],0)/a.length;
+function agg(sys){const a=recs(sys);const rt=a.filter(x=>x.rtf!=null);
+ return {n:a.length,der:mean(a,'der'),miss:mean(a,'miss'),fa:mean(a,'fa'),conf:mean(a,'conf'),jer:mean(a,'jer'),ok:a.filter(x=>x.hyp===x.ref).length,hyps:a.map(x=>x.hyp),rtf:rt.length?mean(rt,'rtf'):null}}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function boot(a,b,B=2000){const A=recs(a),Bb=recs(b);const key=r=>r.m+'|'+r.mic;const mb=Object.fromEntries(Bb.map(r=>[key(r),r]));
+ const pairs=A.filter(r=>mb[key(r)]).map(r=>[r.der/100*D.T[r.m],mb[key(r)].der/100*D.T[r.m],D.T[r.m]]);const n=pairs.length;if(n<2)return null;
+ const f=p=>{let ea=0,eb=0,t=0;for(const x of p){ea+=x[0];eb+=x[1];t+=x[2]}return 100*(ea-eb)/t};
+ const obs=f(pairs),R=rng(12345),d=[];for(let i=0;i<B;i++){const s=[];for(let j=0;j<n;j++)s.push(pairs[Math.floor(R()*n)]);d.push(f(s))}
+ d.sort((x,y)=>x-y);return {obs,lo:d[Math.floor(.025*B)],hi:d[Math.floor(.975*B)-1],p:d.filter(x=>x<0).length/B,n}}
+function bar(r){const W=130/70;return `<div class="bar" data-t="Missed ${r.miss.toFixed(1)} · False alarm ${r.fa.toFixed(1)} · Wrong speaker ${r.conf.toFixed(1)}"><i style="width:${r.miss*W}px;background:var(--or)"></i><i style="width:${r.fa*W}px;background:var(--yel)"></i><i style="width:${r.conf*W}px;background:var(--blue)"></i></div>`}
+function render(){
+ const F=[['set','Scoring',SET,v=>SETL[v]],['mic','Microphone',['All','Mix-Headset','Array1-01'],v=>v==='All'?'Both':MICL[v]],['m','Meeting',['All','ES2004a','IS1009a','TS3003a'],v=>v==='All'?'All 3':v]];
+ $('filters').innerHTML=F.map(([k,l,vs,lab])=>`<div class="f"><b>${l}</b>${vs.map(v=>`<button class="${st[k]===v?'on':''}" data-k="${k}" data-v="${v}">${lab(v)}</button>`).join('')}</div>`).join('');
+ let rs=MAIN.map(s=>({...s,...agg(s.k)})).sort((a,b)=>a.der-b.der);
+ let g=1,anc=rs[0];rs.forEach((r,i)=>{if(i>0){const b=boot(r.k,anc.k);if(b&&b.lo>0){g=i+1;anc=r}}r.g=g});
+ const n=rs[0].n;$('slice').textContent=`${SETL[st.set]} scoring · ${st.mic==='All'?'both mics':MICL[st.mic]} · ${st.m==='All'?'all meetings':st.m} · ${n} recording${n>1?'s':''}`+(n<6?' · fewer recordings, so groups get wider':'');
+ $('tb').innerHTML=rs.map(r=>`<tr class="sys ${st.sel===r.k?'sel':''}" data-s="${r.k}"><td><span class="grp">${r.g}</span></td><td><b>${r.n}</b><br><span class="small mut">${r.sub}</span></td><td><span class="tag ${r.t}">${r.tl}</span></td><td class="num"><b>${r.der.toFixed(1)}</b></td><td>${bar(r)}</td><td class="num">${r.jer.toFixed(1)}</td><td class="num" data-t="Speakers output per recording: ${r.hyps.join(', ')} (truth: 4)"><span class="${r.ok===r.n?'good':(r.ok===0?'bad':'')}">${r.ok}/${r.n} exact</span></td><td class="num">${r.rtf==null?'<span class="mut">n/a</span>':r.rtf.toFixed(3)}</td></tr>`).join('');
+ $('tb2').innerHTML=ORA.map(o=>{const a=agg(o.k),b=agg(o.base),d=a.der-b.der;return `<tr><td><b>${o.n}</b></td><td class="num"><b>${a.der.toFixed(1)}</b></td><td>${bar(a)}</td><td class="num">${a.jer.toFixed(1)}</td><td class="num"><span class="${d>0?'bad':'good'}">${d>0?'+':''}${d.toFixed(1)} DER</span></td></tr>`}).join('');
+ detail();pairUI();
+}
+function detail(){const s=MAIN.find(x=>x.k===st.sel)||MAIN[0];const a=recs(s.k);
+ $('dtitle').textContent=s.n+(s.sub?' · '+s.sub:'');
+ $('detail').innerHTML=`<table class="rec"><thead><tr><th>Recording</th><th class="num">DER</th><th class="num">JER</th><th class="num">Spk</th></tr></thead><tbody>${a.map(r=>`<tr><td>${r.m}<br><span class="mut">${MICL[r.mic]}</span></td><td class="num"><b>${r.der.toFixed(1)}</b></td><td class="num">${r.jer.toFixed(1)}</td><td class="num"><span class="${r.hyp===r.ref?'good':'bad'}">${r.hyp}</span>/${r.ref}</td></tr>`).join('')}</tbody></table>`}
+function pairUI(){const opts=MAIN.concat(ORA).map(s=>`<option value="${s.k}">${s.n}${s.sub?' ('+s.sub+')':''}</option>`).join('');
+ const pa=$('pa'),pb=$('pb');const va=pa.value||MAIN[0].k,vb=pb.value||MAIN[1].k;pa.innerHTML=opts;pb.innerHTML=opts;pa.value=va;pb.value=vb;
+ const r=boot(va,vb);if(!r){$('pres').textContent='Need at least 2 recordings. Widen the filter.';return}
+ const lo=Math.min(r.lo,-1),hi=Math.max(r.hi,1),sp=hi-lo,x=v=>((v-lo)/sp*100).toFixed(1)+'%';
+ const verdict=r.hi<0?'<span class="good">A is really better (whole interval below 0).</span>':r.lo>0?'<span class="bad">B is really better (whole interval above 0).</span>':'<span>Can\'t separate them: the interval crosses 0.</span>';
+ $('pres').innerHTML=`A minus B = <b>${r.obs.toFixed(1)}</b> DER points (time-weighted), 95% CI <b>${r.lo.toFixed(1)}</b> to <b>${r.hi.toFixed(1)}</b>, over ${r.n} paired recordings.<div class="ci"><div class="z" style="left:${x(0)}"></div><div class="r" style="left:${x(r.lo)};width:${((r.hi-r.lo)/sp*100).toFixed(1)}%"></div><div class="o" style="left:calc(${x(r.obs)} - 2px)"></div></div><div class="small mut" style="display:flex;justify-content:space-between"><span>A better</span><span>0</span><span>B better</span></div>${verdict}`}
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-k]'),tr=e.target.closest('tr.sys');
+ if(b){st[b.dataset.k]=b.dataset.v;render()}else if(tr){st.sel=tr.dataset.s;render()}});
+document.addEventListener('change',e=>{if(e.target.id==='pa'||e.target.id==='pb')pairUI()});
+const tip=$('tip');function showTip(t,x,y){tip.style.display='block';tip.textContent=t.dataset.t;tip.style.left=Math.min(x+12,innerWidth-270)+'px';tip.style.top=(y+12)+'px'}
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-t]');if(t)showTip(t,e.clientX,e.clientY);else tip.style.display='none'});
+document.addEventListener('touchstart',e=>{const t=e.target.closest('[data-t]');if(t){const p=e.touches[0];showTip(t,p.clientX,p.clientY)}else tip.style.display='none'},{passive:true});
+render();
+</script></body></html>
